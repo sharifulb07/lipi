@@ -68,6 +68,9 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
+      <head>
+        <meta name="google-site-verification" content="ZJ-GfeoDDTgKTKOUkzmb60j6FYdG5S6uLZiASb5q1G4" />
+      </head>
       <body className={`${inter.variable} ${bangla.variable}`}>{children}</body>
     </html>
   );
