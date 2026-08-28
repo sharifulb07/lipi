@@ -1,2 +1,6 @@
 allowBuilds:
   unrs-resolver: false
+
+ignoredBuiltDependencies:
+  - tesseract.js
+  - unrs-resolver
