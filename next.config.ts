@@ -28,13 +28,9 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   experimental: { optimizePackageImports: ["lucide-react"] },
-  serverExternalPackages: ["@napi-rs/canvas", "tesseract.js", "pdfjs-dist"],
+  serverExternalPackages: ["@napi-rs/canvas", "tesseract.js"],
   outputFileTracingIncludes: {
-    "/api/convert": [
-      "./vendor/pdfjs/pdf.worker.mjs",
-      "./node_modules/pdfjs-dist/standard_fonts/**/*",
-      "./node_modules/pdfjs-dist/cmaps/**/*",
-    ],
+    "/api/convert": ["./vendor/pdfjs/**/*"],
   },
   async headers() {
     return [{ source: "/(.*)", headers: securityHeaders }];

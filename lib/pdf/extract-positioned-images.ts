@@ -29,7 +29,7 @@ async function imagePng(image:PdfImageData){
 export async function extractPositionedImages(buffer:Uint8Array):Promise<PositionedPdfImage[]>{
  Object.assign(globalThis,{DOMMatrix,ImageData,Path2D});
  const pdfjs=await loadPdfJs();
- const packageRoot=path.join(process.cwd(),"node_modules","pdfjs-dist"),directoryUrl=(directory:string)=>pathToFileURL(directory+path.sep).href;
+ const packageRoot=path.join(process.cwd(),"vendor","pdfjs"),directoryUrl=(directory:string)=>pathToFileURL(directory+path.sep).href;
  const pdf=await pdfjs.getDocument({data:buffer.slice(),useWorkerFetch:false,isEvalSupported:false,useSystemFonts:true,standardFontDataUrl:directoryUrl(path.join(packageRoot,"standard_fonts")),cMapUrl:directoryUrl(path.join(packageRoot,"cmaps")),cMapPacked:true}).promise;
  const output:PositionedPdfImage[]=[];
  for(let pageNumber=1;pageNumber<=pdf.numPages;pageNumber++){

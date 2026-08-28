@@ -19,7 +19,7 @@ export async function renderPages(buffer:Uint8Array,dpi=200):Promise<RenderedPag
   // Install one shared set of native constructors before PDF.js is imported.
   Object.assign(globalThis,{DOMMatrix,ImageData,Path2D});
   const pdfjs=await loadPdfJs();
-  const packageRoot=path.join(process.cwd(),"node_modules","pdfjs-dist");
+  const packageRoot=path.join(process.cwd(),"vendor","pdfjs");
   const directoryUrl=(directory:string)=>pathToFileURL(directory+path.sep).href;
   const pdf=await pdfjs.getDocument({
     data:buffer.slice(),
