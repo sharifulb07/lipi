@@ -20,11 +20,17 @@ function upload(file:File,onProgress:(percent:number,speed:number)=>void){
    onProgress(Math.round(event.loaded/event.total*100),event.loaded/seconds);
   };
   request.onerror=()=>reject(new Error("Upload failed. Check your connection and try again."));
+  request.onabort=()=>reject(new Error("The upload was cancelled."));
+  request.ontimeout=()=>reject(new Error("The upload timed out. Please try again."));
+  request.timeout=120000;
   request.onload=()=>{
-   try{
-    const data=JSON.parse(request.responseText) as {job?:ConversionJob;error?:string};
-    if(request.status<200||request.status>=300||!data.job)reject(new Error(data.error||"Upload failed"));else resolve(data.job);
-   }catch{reject(new Error("The upload server returned an invalid response."))}
+   let data:{job?:ConversionJob;error?:string}|null=null;
+   try{data=JSON.parse(request.responseText) as {job?:ConversionJob;error?:string}}catch{
+    const fallback=request.status===413?"The PDF is too large for the upload server.":request.status>=500?"The upload server could not process the PDF. Please try again.":`Upload failed (HTTP ${request.status||"unknown"}).`;
+    reject(new Error(fallback));return;
+   }
+   if(request.status<200||request.status>=300||!data.job){reject(new Error(data.error||`Upload failed (HTTP ${request.status}).`));return}
+   resolve(data.job);
   };
   request.send(form);
  });
