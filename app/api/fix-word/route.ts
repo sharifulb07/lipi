@@ -7,7 +7,10 @@ import { pathToFileURL } from "node:url";
 import { promisify } from "node:util";
 import { NextResponse } from "next/server";
 import { matchesDocumentType, requestGuard } from "@/lib/security/request";
+import { convertWordWithCloudConvert } from "@/lib/word/cloudconvert";
+import { convertWordWithOpenSourceService } from "@/lib/word/open-source-converter";
 export const runtime = "nodejs";
+export const maxDuration = 300;
 const run = promisify(execFile), extensions = new Set([".doc",".docx",".odt",".rtf"]);
 
 function officeExecutable() {
@@ -32,6 +35,29 @@ export async function POST(request: Request) {
     if (!extensions.has(extension)) return NextResponse.json({ error: "Use a DOC, DOCX, ODT, or RTF file" }, { status: 415 });
     const bytes = new Uint8Array(await file.arrayBuffer());
     if (!matchesDocumentType(bytes, extension)) return NextResponse.json({ error: "The file content does not match its document extension" }, { status: 415 });
+    const openSourceServiceUrl = process.env.WORD_COMPATIBILITY_API_URL?.trim();
+    if (openSourceServiceUrl) {
+      const result = await convertWordWithOpenSourceService(
+        bytes,
+        file.name,
+        openSourceServiceUrl,
+        process.env.WORD_COMPATIBILITY_API_TOKEN?.trim(),
+      );
+      const body = result.buffer.slice(result.byteOffset, result.byteOffset + result.byteLength) as ArrayBuffer;
+      return new Response(body,{headers:{"Content-Type":"application/vnd.openxmlformats-officedocument.wordprocessingml.document","Content-Disposition":`attachment; filename="${downloadName(file.name)}"`,"Cache-Control":"no-store","X-Content-Type-Options":"nosniff"}});
+    }
+    const cloudConvertKey = process.env.CLOUDCONVERT_API_KEY?.trim();
+    if (cloudConvertKey) {
+      const result = await convertWordWithCloudConvert(bytes, file.name, extension, cloudConvertKey);
+      const body = result.buffer.slice(result.byteOffset, result.byteOffset + result.byteLength) as ArrayBuffer;
+      return new Response(body,{headers:{"Content-Type":"application/vnd.openxmlformats-officedocument.wordprocessingml.document","Content-Disposition":`attachment; filename="${downloadName(file.name)}"`,"Cache-Control":"no-store","X-Content-Type-Options":"nosniff"}});
+    }
+    if (process.env.VERCEL) {
+      return NextResponse.json(
+        { error: "Word repair on Vercel requires WORD_COMPATIBILITY_API_URL (open source) or CLOUDCONVERT_API_KEY." },
+        { status: 503, headers: { "Cache-Control": "no-store" } },
+      );
+    }
     temporary = await mkdtemp(path.join(os.tmpdir(),"lipi-word-"));
     const inputDirectory=path.join(temporary,"input"), outputDirectory=path.join(temporary,"output"), profileDirectory=path.join(temporary,"profile");
     await mkdir(inputDirectory); await mkdir(outputDirectory); await mkdir(profileDirectory);

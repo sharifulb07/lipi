@@ -39,9 +39,9 @@ export async function processConversion(id:string){
     let output:Uint8Array;
 
     if(job.options?.mode==="preserve-layout"){
-      updateJob(id,{status:"generating",progress:35,message:"Rendering exact page appearance"});
-      const pages=await renderPages(input,200);
-      updateJob(id,{status:"generating",progress:82,message:"Creating exact visual Word document"});
+      updateJob(id,{status:"generating",progress:20,message:"Rendering exact page appearance"});
+      const pages=await renderPages(input,0,{format:"jpeg",quality:90,concurrency:1,onPage:(completed,total)=>updateJob(id,{progress:20+Math.round(completed/total*60),message:`Rendering page ${completed} of ${total}`})});
+      updateJob(id,{status:"generating",progress:84,message:"Creating optimized visual Word document"});
       output=await createLayoutDocument(pages);
     }else{
       updateJob(id,{status:"analyzing",progress:12,message:"Analyzing PDF"});

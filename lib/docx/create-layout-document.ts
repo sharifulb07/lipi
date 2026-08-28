@@ -1,4 +1,4 @@
-﻿import { Document,ImageRun,Packer,PageOrientation,Paragraph } from "docx";
+import { Document,ImageRun,Packer,PageOrientation,Paragraph } from "docx";
 import type { RenderedPage } from "../pdf/render-page";
 
 export async function createLayoutDocument(pages:RenderedPage[]):Promise<Uint8Array>{
@@ -13,7 +13,7 @@ export async function createLayoutDocument(pages:RenderedPage[]):Promise<Uint8Ar
       spacing:{before:0,after:0,line:1},
       children:[new ImageRun({
         data:Buffer.from(page.png),
-        type:"png",
+        type:page.imageType,
         transformation:{width:page.pdfWidth*96/72,height:page.pdfHeight*96/72},
       })],
     })],

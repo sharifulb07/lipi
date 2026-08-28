@@ -35,7 +35,7 @@ export default function Home() {
     <section className="features shell" id="how">
       <article><div className="feature-icon coral"><Languages/></div><h3>20-language conversion</h3><p>Language-aware OCR and Unicode-safe processing cover Latin, Indic, Arabic, Cyrillic, and CJK text.</p></article>
       <article><div className="feature-icon mint"><FileText/></div><h3>Actually editable</h3><p>Paragraphs become real Word content you can select, search, and change.</p></article>
-      <article id="privacy"><div className="feature-icon blue"><LockKeyhole/></div><h3>Private by design</h3><p>Documents are handled by your conversion worker without third-party document services.</p></article>
+      <article id="privacy"><div className="feature-icon blue"><LockKeyhole/></div><h3>Private by design</h3><p>PDF and OCR files stay on your worker. On Vercel, Word compatibility repair uses your configured conversion provider.</p></article>
     </section>
     <section className="seo-content shell" aria-labelledby="supported-languages">
       <div><span className="eyebrow">BUILT FOR REAL DOCUMENTS</span><h2 id="supported-languages">PDF and image OCR for 20 major languages</h2><p>Lipi keeps selectable PDF text in its original language and can OCR scanned pages or images. Choose Structured editable for flowing Word content, Textbox layout + editable for positioned text and images, or Exact visual copy when appearance matters most.</p></div>
