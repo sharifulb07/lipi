@@ -1,6 +1,7 @@
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { createCanvas,DOMMatrix,ImageData,Path2D } from "@napi-rs/canvas";
+import { loadPdfJs } from "./pdfjs";
 
 export interface RenderedPage {
   pageNumber:number;
@@ -17,8 +18,7 @@ export async function renderPages(buffer:Uint8Array,dpi=200):Promise<RenderedPag
   // which makes ctx.fill(path) reject an otherwise valid glyph path.
   // Install one shared set of native constructors before PDF.js is imported.
   Object.assign(globalThis,{DOMMatrix,ImageData,Path2D});
-  const pdfjs=await import("pdfjs-dist/legacy/build/pdf.mjs");
-  pdfjs.GlobalWorkerOptions.workerSrc=pathToFileURL(path.join(process.cwd(),"node_modules","pdfjs-dist","legacy","build","pdf.worker.mjs")).href;
+  const pdfjs=await loadPdfJs();
   const packageRoot=path.join(process.cwd(),"node_modules","pdfjs-dist");
   const directoryUrl=(directory:string)=>pathToFileURL(directory+path.sep).href;
   const pdf=await pdfjs.getDocument({

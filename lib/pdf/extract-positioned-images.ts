@@ -1,6 +1,7 @@
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { createCanvas,DOMMatrix,ImageData,Path2D } from "@napi-rs/canvas";
+import { loadPdfJs } from "./pdfjs";
 
 export interface PositionedPdfImage {pageNumber:number;x:number;top:number;width:number;height:number;rotation:number;flipHorizontal:boolean;flipVertical:boolean;data:Uint8Array}
 type Matrix=[number,number,number,number,number,number];
@@ -27,8 +28,7 @@ async function imagePng(image:PdfImageData){
 
 export async function extractPositionedImages(buffer:Uint8Array):Promise<PositionedPdfImage[]>{
  Object.assign(globalThis,{DOMMatrix,ImageData,Path2D});
- const pdfjs=await import("pdfjs-dist/legacy/build/pdf.mjs");
- pdfjs.GlobalWorkerOptions.workerSrc=pathToFileURL(path.join(process.cwd(),"node_modules","pdfjs-dist","legacy","build","pdf.worker.mjs")).href;
+ const pdfjs=await loadPdfJs();
  const packageRoot=path.join(process.cwd(),"node_modules","pdfjs-dist"),directoryUrl=(directory:string)=>pathToFileURL(directory+path.sep).href;
  const pdf=await pdfjs.getDocument({data:buffer.slice(),useWorkerFetch:false,isEvalSupported:false,useSystemFonts:true,standardFontDataUrl:directoryUrl(path.join(packageRoot,"standard_fonts")),cMapUrl:directoryUrl(path.join(packageRoot,"cmaps")),cMapPacked:true}).promise;
  const output:PositionedPdfImage[]=[];

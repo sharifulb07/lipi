@@ -1,7 +1,6 @@
 import type { ExtractedPage,PdfLine,PdfTable } from "../types";
-import path from "node:path";
-import { pathToFileURL } from "node:url";
 import { extractRuledTables } from "./extract-ruled-tables";
+import { loadPdfJs } from "./pdfjs";
 interface Item { str:string; transform:number[]; width:number; height:number; fontName?:string }
 interface TextStyle { fontFamily?:string }
 type PdfOps=Record<string,number>;
@@ -78,11 +77,7 @@ function extractTables(rows:Map<number,PdfLine[]>):{tables:PdfTable[];used:Set<n
  return{tables,used};
 }
 export async function extractText(buffer:Uint8Array):Promise<{pages:ExtractedPage[];fonts:string[]}>{
- const pdfjs=await import("pdfjs-dist/legacy/build/pdf.mjs");
- // In Node, PDF.js uses its worker module as a same-thread "fake worker".
- // Turbopack's inferred chunk URL does not include that module, so point PDF.js
- // at the package file explicitly instead of its generated server chunk path.
- pdfjs.GlobalWorkerOptions.workerSrc=pathToFileURL(path.join(process.cwd(),"node_modules","pdfjs-dist","legacy","build","pdf.worker.mjs")).href;
+ const pdfjs=await loadPdfJs();
  // PDF.js transfers the data buffer to its worker and may detach it. Clone the
  // bytes so callers can safely analyze and extract from the same upload.
  const pdf=await pdfjs.getDocument({data:buffer.slice(),useWorkerFetch:false,isEvalSupported:false,useSystemFonts:true}).promise; const pages:ExtractedPage[]=[]; const fonts=new Set<string>();
