@@ -1,0 +1,3 @@
+import { getJob } from "@/lib/queue/conversion-queue";import { getObject } from "@/lib/storage/storage";
+export const runtime="nodejs";
+export async function GET(_request:Request,{params}:{params:Promise<{jobId:string}>}){const{jobId}=await params,job=getJob(jobId);if(!job?.outputKey)return Response.json({error:"File is not ready"},{status:404});const data=await getObject(job.outputKey),name=job.fileName.replace(/\.pdf$/i,"")+".docx";return new Response(data,{headers:{"content-type":"application/vnd.openxmlformats-officedocument.wordprocessingml.document","content-disposition":`attachment; filename="${encodeURIComponent(name)}"`}})}

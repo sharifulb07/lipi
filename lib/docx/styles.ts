@@ -1,0 +1,1 @@
+export const documentStyles={default:{document:{run:{font:"Nirmala UI",size:22},paragraph:{spacing:{after:120,line:276}}}},paragraphStyles:[{id:"PdfHeading",name:"PDF Heading",basedOn:"Normal",next:"Normal",quickFormat:true,run:{bold:true,size:30},paragraph:{spacing:{before:180,after:100}}}]};

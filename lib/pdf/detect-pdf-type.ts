@@ -1,0 +1,2 @@
+import { detectBanglaEncoding } from "../bangla/detect-encoding"; import type { ExtractedPage,PdfKind } from "../types";
+export function detectPdfType(pages:ExtractedPage[],fonts:string[]):PdfKind{const text=pages.flatMap(p=>[...p.lines.map(l=>l.text),...p.tables.flatMap(t=>t.rows.flatMap(r=>r.map(c=>c.text)))]).join(" ");const count=pages.filter(p=>p.lines.length||p.tables.length).length;if(text.trim().length<Math.max(12,pages.length*5))return"scanned";if(detectBanglaEncoding(text,fonts)==="legacy")return"legacy";return count<pages.length?"mixed":"unicode"}

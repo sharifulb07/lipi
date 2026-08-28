@@ -1,0 +1,1 @@
+export function validateBangla(text:string){ const issues:string[]=[]; if (/\uFFFD/.test(text)) issues.push("Replacement character"); return {valid:!issues.length,score:Math.max(0,1-issues.length*.25),issues} }

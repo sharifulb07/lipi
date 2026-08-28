@@ -1,0 +1,3 @@
+import Link from "next/link";import Converter from "@/components/converter";
+export const metadata={title:"Convert PDF - Lipi"};
+export default function ConvertPage(){return <main><nav className="nav shell"><Link className="brand" href="/"><span className="brand-mark">Li</span><span>Lipi</span></Link><div className="nav-links"><Link href="/">Home</Link><Link href="/history">History</Link></div></nav><section className="convert-page shell"><div className="page-heading"><span className="eyebrow">PDF TO EDITABLE WORD</span><h1>Convert your document</h1><p>Language-aware extraction, OCR, Unicode normalization, and editable DOCX output.</p></div><Converter/></section></main>}
